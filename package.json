@@ -12,6 +12,7 @@
     "debug": "~2.2.0",
     "ejs": "~2.3.2",
     "express": "~4.13.0",
+    "formidable": "^1.0.17",
     "mongodb": "^2.0.39",
     "mongoose": "^4.1.0",
     "morgan": "~1.6.1",

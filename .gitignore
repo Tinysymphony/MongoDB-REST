@@ -1,1 +1,4 @@
 node_modules/
+curl-test
+npm-debug.log
+dataFiles/

@@ -2,79 +2,99 @@ var url = 'mongodb://127.0.0.1:27017/node6';
 var collection = 'taxi';
 var mongo = require('../lib/mongoCRUD').init(url);
 var mongoose = require('../lib/mongooseCRUD').init(url, collection);
-
 var express = require('express');
+var path = require('path');
+var fs = require('fs');
+var async = require('async');
+
+var formidable = require('formidable');
+
 var database = express.Router();
 
-//curl -X GET -H 'Content-Type: application/json' -d '{"query" :{"v":43, "d":4,"i":true}}' http://localhost:3000/db/taxi
+var tmpDirection = path.resolve(__dirname, '../dataFiles');
+
 database.get('/taxi', function (req, res) {
-    if(!req.body) { 
-        res.send("Pleas give correct query conditions!");
+    if(!req.body.query) { 
+        res.send("Pleas give correct query conditions!\n");
         return;
     }
-    mongo.queryData(req.body.query, function(err, result){
+    mongoose.queryData(req.body.query, function(err, results){
         if(err) { res.send(err); return; }
-        res.send(result[0]);
+        res.send(results.length + " record(s) is/are found. \n" + results + "\n");
     });
 });
-
-//curl -X POST -H 'Content-Type: application/json' -d '{"dataType": "record", "record": {"t":"2015/5/5-12:12", "n":"wytiny","l":[120,28] ,"i":true}}' http://localhost:3000/db/taxi
-
-//curl -X POST -H 'Content-Type: application/json' -d '{"dataType" :"records", "records": [{"t":"2015/5/5-12:12", "n":"tinys","l":[120,28] ,"i":true},{"t":"2016/1/1", "i":false, "n":"tinys", "l":[120,29]}] }' http://localhost:3000/db/taxi
-
 
 database.post('/taxi', function (req, res) {
     // console.log(req.body , req.files);
     var data = req.body;
     switch (data.dataType) {
         case "record":
-            mongoose.insertRecord(data.record, function (err, result){
+            mongoose.insertRecord(data.record, function (err, results){
                 if(err) { res.send(err); return; }
-                res.send(result);
+                res.send(results + "\n");
             });
             break;
         case "records":
-            mongoose.insertRecordArray(data.records, function(err, result){
+            mongoose.insertRecordArray(data.records, function(err, results){
                 if(err) { res.send(err); return; }
-                res.send(result);
+                res.send(results + "\n");
             });
             break;
         case "binaryFile":
-            mongo.insertFile(data.binaryFile, function(err, result){
+            mongoose.insertFile(data.binaryFile, function(err, results){
                 if(err) { res.send(err); return; }
-                res.send(result);
+                res.send(results + "\n");
             });
             break;
         case "zip":
-            mongo.insertFileArray(data.zip, function(err, result){
+            mongoose.insertFileArray(data.zip, function(err, results){
                 if(err) { res.send(err); return; }
-                res.send(result);
+                res.send(results + "\n");
             });
             break;
         default:
-            res.send("Please upload data in right form!");
+            res.send("Please upload data in right form!\n");
             break;
     }
+});
+
+database.post('/taxi/file',  function (req, res, next){
+    var form = new formidable.IncomingForm();
+    form.encoding = 'utf-8';
+    form.uploadDir = tmpDirection;
+    form.keepExtensions = false;
+    form.type = 'multipart';
+
+    form.parse(req, function (err ,fields, files){
+        if(err) { res.send(err.toString() + '\n'); return; }
+        console.log(files.fulAvatar.type);
+        fs.rename(files.fulAvatar.path, "dataFiles/tiny-" + new Date(), function(err){
+            if(err) { res.send(err.toString() + '\n'); return; }
+            res.send("ok!");
+        });
+    });
+
 });
 
 database.put('/taxi', function (req, res, next){
     if(!(req.body.query && req.body.update)) { 
-        res.send("Pleas give correct update conditions and opeartions!");
+        res.send("Pleas give correct update conditions and opeartions!\n");
         return;
     }
-    mongo.updateData(req.body.query, req.body.update, function (err, result){
+    var options = { multi: true };
+    mongoose.updateData(req.body.query, req.body.update, options, function (err, results){
         if(err) { res.send(err); return; }
-        res.send(result);
+        res.send(results+ "\n");
     });
 });
 
 database.delete('/taxi', function (req, res, next){
-    if(!req.body) { 
-        res.send("Pleas give correct delete conditions!");
+    if(!req.body.delete) { 
+        res.send("Pleas give correct delete conditions!\n");
         return;
     }
-    mongo.deleteData(req.body.delete, function (err, result){
-        res.send(result);
+    mongoose.deleteData(req.body.delete, function (err, results){
+        res.send(results + "\n");
     });
 });
 
