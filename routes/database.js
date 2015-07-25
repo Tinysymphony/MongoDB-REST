@@ -1,5 +1,7 @@
 var url = 'mongodb://127.0.0.1:27017/node6';
+var collection = 'taxi';
 var mongo = require('../lib/mongoCRUD').init(url);
+var mongoose = require('../lib/mongooseCRUD').init(url, collection);
 
 var express = require('express');
 var database = express.Router();
@@ -16,22 +18,23 @@ database.get('/taxi', function (req, res) {
     });
 });
 
-//curl -X POST -H 'Content-Type: application/json' -d '{"dacord": {"t":"2015/5/5-12:12", "n":"wytiny","l":[120,28] ,"i":true}}' http://localhost:3000/db/taxi
+//curl -X POST -H 'Content-Type: application/json' -d '{"dataType": "record", "record": {"t":"2015/5/5-12:12", "n":"wytiny","l":[120,28] ,"i":true}}' http://localhost:3000/db/taxi
 
 //curl -X POST -H 'Content-Type: application/json' -d '{"dataType" :"records", "records": [{"t":"2015/5/5-12:12", "n":"tinys","l":[120,28] ,"i":true},{"t":"2016/1/1", "i":false, "n":"tinys", "l":[120,29]}] }' http://localhost:3000/db/taxi
 
 
 database.post('/taxi', function (req, res) {
+    // console.log(req.body , req.files);
     var data = req.body;
     switch (data.dataType) {
         case "record":
-            mongo.insertRecord(data.record, function (err, result){
+            mongoose.insertRecord(data.record, function (err, result){
                 if(err) { res.send(err); return; }
                 res.send(result);
             });
             break;
         case "records":
-            mongo.insertRecordArray(data.records, function(err, result){
+            mongoose.insertRecordArray(data.records, function(err, result){
                 if(err) { res.send(err); return; }
                 res.send(result);
             });
