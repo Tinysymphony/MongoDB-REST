@@ -2,17 +2,43 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link rel="stylesheet" href="/stylesheets/flat-ui/css/vendor/bootstrap.min.css" />
+    <link rel="stylesheet" href="/stylesheets/flat-ui/css/flat-ui.min.css" />
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+  <h3 id="header"><%= title %> 「稼動中」</h3> 
+  <hr class="featurette-divider" />
+
+  <div class="jumbotron">
+    <h5>GET Map data (GeoJSON)</h5>
+    <p>查询时可使用<strong>id</strong>或者<strong>name</strong>，下面是以<strong>id</strong>为示范</p>
+    <pre>GET http://host:port/db/map/china //获得china.json</pre>
+    <pre>GET http://host:port/db/map/province?id=xxx //查询省地理信息(GeoJSON)</pre>
+    <pre>GET http://host:port/db/map/county?id=xxx //查询市地理信息(Array)</pre>
+    <pre>GET http://host:port/db/map/district?id=xxx //查询区地理信息(GeoJSON)</pre>
+
+    <hr class="featurette-divider" />
+    <h5>REST API for Taxi Record</h5>
+    <pre>POST / DELETE / PUT / GET http://host:port/db/taxi //增删改查出租车记录数据库，可批量</pre>
+    <pre>POST / DELETE / PUT / GET http://host:port/db/taxi/:id //针对单条数据的增删改查</pre>
+    <pre>POST http://host:port/db/taxi/file //上传二进制文件做批量插入</pre>
+    <pre>POST http://host:port/db/taxi/zip //上传数据zip包做大批量插入</pre>
+    <hr class="featurette-divider" />
     <form class="form-signin" role="form" action="/db/taxi/file" method="post" enctype='multipart/form-data'>
-        <h2 class="form-signin-heading">上传文件</h2>
-        <input id="fulAvatar" name="recordFiles" type="file" class="form-control" multiple/>   
-        <br/>
-        <button id="sub-btn" class="btn btn-lg btn-primary" type="submit">上 传</button>
+      <h5>Upload Binary File</h5>
+      <input id="fileSubmit" name="recordFiles" type="file" class="form-control" multiple/>   
+      <br/>
+      <button id="sub-btn" class="btn btn-lg btn-primary" type="submit">上 传</button>
     </form>
+  </div>
+  <div id="baseLayer">    
+    <img id="background" src="http://7xjgb0.com1.z0.glb.clouddn.com/TinyPiclovelive.jpg"/> 
+  </div>
+  
+  <hr class="featurette-divider" />
+  <p id="footer">© 2015 Wy.Tiny</p>
+
   </body>
 </html>

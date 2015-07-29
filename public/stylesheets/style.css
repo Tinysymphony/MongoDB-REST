@@ -6,3 +6,28 @@ body {
 a {
   color: #00B7FF;
 }
+
+#header {
+    text-align: center;
+}
+
+#baseLayer {
+    /*position:absolute; */
+    width:100%; 
+    height:100%; 
+    z-index:-2
+}
+
+#background {
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
+
+#fileSubmit {
+    width: 20%;
+}
+
+#footer {
+    text-align: center;
+}
