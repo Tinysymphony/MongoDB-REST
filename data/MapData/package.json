@@ -1,0 +1,15 @@
+{
+  "name": "MapData",
+  "version": "1.0.0",
+  "description": "Geo-Json-Data of China",
+  "main": "insert.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "WyTiny",
+  "license": "MIT",
+  "dependencies": {
+      "async": "~1.4.0",
+      "mongodb": "~2.0.39"
+  }
+}

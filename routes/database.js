@@ -1,6 +1,6 @@
-var url = 'mongodb://127.0.0.1:27017/node8';
+var url = 'mongodb://127.0.0.1:27017/taxidata';
 var collection = 'taxi';
-var mongo = require('../lib/mongoCRUD').init(url);
+// var mongo = require('../lib/mongoCRUD').init(url, collection);
 var mongoose = require('../lib/mongooseCRUD').init(url, collection);
 var express = require('express');
 var path = require('path');
@@ -13,7 +13,7 @@ var database = express.Router();
 
 var saveDirectory = path.resolve(__dirname, '../dataFiles');
 
-database.get('/taxi', function (req, res) {
+database.get('/', function (req, res) {
     if(!req.body.query) { 
         res.send("Pleas give correct query conditions!\n");
         return;
@@ -24,7 +24,7 @@ database.get('/taxi', function (req, res) {
     });
 });
 
-database.post('/taxi', function (req, res) {
+database.post('/', function (req, res) {
     // console.log(req.body , req.files);
     var data = req.body;
     switch (data.dataType) {
@@ -58,7 +58,7 @@ database.post('/taxi', function (req, res) {
     }
 });
 
-database.post('/taxi/file',  function (req, res, next){
+database.post('/file',  function (req, res, next){
     var form = new formidable.IncomingForm();
     form.encoding = 'utf-8';
     form.uploadDir = saveDirectory;
@@ -72,18 +72,31 @@ database.post('/taxi/file',  function (req, res, next){
             var filelist = [];
             form.parse(req, function (err ,fields, files){
                 if(err) { callback(err); return; }
-                console.log(fields);
-                async.each(files.recordFiles, function(file, cb){
-                    var fileSavePath = path.join(saveDirectory, file.name);
-                    fs.rename(file.path, fileSavePath, function(err){
+                // console.log(files);
+
+                if(!(files.recordFiles instanceof Array)){
+                    //for single file
+                    var fileSavePath = path.join(saveDirectory, files.recordFiles.name);
+                    fs.rename(files.recordFiles.path, fileSavePath, function(err){
                         if(err) { cb(err); return; }
                         filelist.push(fileSavePath);
-                        cb();
+                        callback(null, filelist);
                     });
-                },  function(err){
-                    if(err) { callback(err); return; }
-                    callback(null, filelist);
-                });
+                } else {
+                    //for multiple files
+                    async.each(files.recordFiles, function(file, cb){
+                        var fileSavePath = path.join(saveDirectory, file.name);
+                        fs.rename(file.path, fileSavePath, function(err){
+                            if(err) { cb(err); return; }
+                            filelist.push(fileSavePath);
+                            cb();
+                        });
+                    },  function(err){
+                        if(err) { callback(err); return; }
+                        callback(null, filelist);
+                    });           
+                }
+
             });
         },
         //call save data to mongodb
@@ -94,17 +107,22 @@ database.post('/taxi/file',  function (req, res, next){
             });
         }
     ], function(err, recordCounter){
-        if(err) { res.send(err.toString() + "\n"); return ;}
         if(err instanceof Array) {
-            res.send("Cannot save the following file(s):\n" + err.toString() + "\n"); 
+            res.send("Cannot save the following file(s):" + err.toString()); 
             return;
         }
+        if(err) { res.send(err); return ;}
         res.send("Success : " + recordCounter + " records have been inserted.\n");
     });
 
 });
 
-database.put('/taxi', function (req, res, next){
+
+database.post('/zip', function (req, res, next){
+
+});
+
+database.put('/', function (req, res, next){
     if(!(req.body.query && req.body.update)) { 
         res.send("Pleas give correct update conditions and opeartions!\n");
         return;
@@ -116,7 +134,7 @@ database.put('/taxi', function (req, res, next){
     });
 });
 
-database.delete('/taxi', function (req, res, next){
+database.delete('/', function (req, res, next){
     if(!req.body.delete) { 
         res.send("Pleas give correct delete conditions!\n");
         return;

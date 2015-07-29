@@ -1,7 +1,10 @@
-####TaxiDatabase
+####Node2-MongoDB-API
 
-> Nodejs Express <===> Mongodb
+> Nodejs Express <===> MongoDB
 
-智慧城市项目，出租车数据部分。将使用分布式的Mongodb提供服务。
+集群节点上的MongoDB API，每个数据集有独立的路由提供REST API
 
-REST api正在施工...
+- TaxiDatabase.js 智慧城市项目，全城出租车数据
+- MapDatabase.js 农业数据项目，全国省市县地理数据
+
+正在施工...
