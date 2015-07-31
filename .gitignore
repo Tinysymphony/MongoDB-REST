@@ -1,4 +1,5 @@
 node_modules/
 curl-test
+query-test
 npm-debug.log
 dataFiles/

@@ -20,6 +20,12 @@
     <pre>GET http://host:port/db/map/district?id=xxx //查询区地理信息(GeoJSON)</pre>
 
     <hr class="featurette-divider" />
+    <h5>Query Taxi Record By Time and Location</h5>
+    <pre>GET http://host:port/db/taxi/query //输入经纬度范围和时间范围，可缺省</pre>
+    <pre>?timeUB=时间上界<br>?timeLB=时间下界<br>?longtitudeUB=经度上界<br>?longtitudeLB=经度下界<br>?latitudeUB=纬度上界<br>?latitudeLB=纬度下界</pre>
+    <p>Example:</p>
+    <a>http://10.76.6.118/db/taxi/query?timeUB=2014-1-2&timeLB=2014-1-1&longtitudeUB=120.9&longtitudeLB=120.7&latitudeUB=27.9&latitudeLB=27.7</a>
+
     <h5>REST API for Taxi Record</h5>
     <pre>POST / DELETE / PUT / GET http://host:port/db/taxi //增删改查出租车记录数据库，可批量</pre>
     <pre>POST / DELETE / PUT / GET http://host:port/db/taxi/:id //针对单条数据的增删改查</pre>

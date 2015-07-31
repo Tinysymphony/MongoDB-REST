@@ -11,6 +11,9 @@ var async = require('async');
 var MapDatabase = express.Router();
 
 MapDatabase.get('/china', function (req, res, next){
+    // var province = req.query.province;
+    // var county = req.query.console;
+    // var district = req.query.district;
     getChinaMap(function(err, result){
         if(err) { res.send(err); return; }
         res.send(result);
@@ -76,10 +79,6 @@ MapDatabase.get('/district', function (req, res, next){
         if(err) { res.send(err); return; }
         res.send(result.pop());
     });  
-});
-
-MapDatabase.get('/', function (req, res, next){
-
 });
 
 var getChinaMap = function (callback) {

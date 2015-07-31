@@ -1,12 +1,13 @@
-var url = 'mongodb://127.0.0.1:27017/taxidata';
+var mongodbUrl = 'mongodb://127.0.0.1:27017/taxidata';
 var collection = 'taxi';
+var pgUrl = 'postgres://justcj:vag@192.168.1.104:5432/testdb';
 // var mongo = require('../lib/mongoCRUD').init(url);
-var mongoose = require('../lib/mongooseCRUD').init(url, collection);
+var mongoose = require('../lib/mongooseCRUD').init(mongodbUrl, collection);
+var pg = require('../lib/pgCRUD').init(pgUrl);
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
 var async = require('async');
-
 var formidable = require('formidable');
 
 var TaxiDatabase = express.Router();
@@ -142,6 +143,24 @@ TaxiDatabase.delete('/', function (req, res, next){
     mongoose.deleteData(req.body.delete, function (err, results){
         res.send(results + "\n");
     });
+});
+
+TaxiDatabase.get('/query', function (req, res, next){
+    var time = {
+        upperBound: req.query.timeUB || '2020-1-1',
+        lowerBound: req.query.timeLB || '2000-1-1'
+    };
+    var loc = {
+        longtitudeUpperBound: req.query.longtitudeUB || 180,
+        longtitudeLowerBound: req.query.longtitudeLB || -180,
+        latitudeUpperBound: req.query.latitudeUB || 90,
+        latitudeLowerBound: req.query.latitudeLB || -90
+    };
+    pg.queryByLocationAndTime(loc, time, function (err, records){
+        if(err) return res.send(err);
+        res.send(records);
+    });
+
 });
 
 module.exports = TaxiDatabase;
